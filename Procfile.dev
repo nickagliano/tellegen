@@ -1,0 +1,4 @@
+# Local development: `just dev` (overmind start -f Procfile.dev).
+# Run `just dev-setup` once first to build the wasm and workspace packages.
+server: TELLEGEN_ALLOW_FALLBACK=1 cargo run -p tellegen-server
+web: npm --workspace tellegen-frontend run dev

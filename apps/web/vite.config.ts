@@ -5,8 +5,27 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig, searchForWorkspaceRoot } from 'vite';
 
 const configDir = fileURLToPath(new URL('.', import.meta.url));
+const workspace = (path: string) => fileURLToPath(new URL(`../../${path}`, import.meta.url));
 
-export default defineConfig({
+// In `vite dev`, resolve the workspace packages to their source so edits under
+// packages/svelte and packages/webmcp hot-reload without `npm run build:*`.
+// Builds keep the published `dist` entrypoints so the demo exercises exactly
+// what ships. The engine stays on `dist` in both modes: it wraps the wasm
+// bundles, which are a separate build step either way.
+// Anchored so any other subpath keeps resolving through the package `exports`.
+const sourceAliases = [
+	{ find: /^@tellegen\/svelte$/, replacement: workspace('packages/svelte/src/lib/index.ts') },
+	{
+		find: /^@tellegen\/svelte\/styles\.css$/,
+		replacement: workspace('packages/svelte/src/lib/styles.css')
+	},
+	{ find: /^@tellegen\/webmcp$/, replacement: workspace('packages/webmcp/src/index.ts') }
+];
+
+export default defineConfig(({ command }) => ({
+	resolve: {
+		alias: command === 'serve' ? sourceAliases : []
+	},
 	plugins: [
 		sveltekit({
 			preprocess: vitePreprocess(),
@@ -65,4 +84,4 @@ export default defineConfig({
 			'/api': process.env.TELLEGEN_API_ORIGIN ?? 'http://localhost:8000'
 		}
 	}
-});
+}));

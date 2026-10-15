@@ -52,3 +52,6 @@ python/tellegen/*.pyd
 __pycache__/
 .venv/
 .pytest_cache/
+
+# overmind
+.overmind.sock

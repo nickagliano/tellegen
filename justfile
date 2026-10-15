@@ -145,6 +145,20 @@ web-smoke:
 web-browser:
     npm run test:browser
 
+# ---- local development ----
+
+# One-time, and again after Rust or engine changes. `just dev` serves packages/svelte and
+# packages/webmcp from source, so edits there hot-reload without a rebuild.
+dev-setup:
+    npm run wasm
+    npm run build:engine
+    npm run build:webmcp
+    npm run build:svelte
+
+# Run the server and the frontend dev server together (`brew install overmind`).
+dev:
+    overmind start -f Procfile.dev
+
 # ---- release ----
 
 # Record an npm package change; commit the file it writes. The crate needs none.
